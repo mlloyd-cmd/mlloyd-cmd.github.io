@@ -1,0 +1,137 @@
+import React, { useState } from 'react';
+import { AlertCircle, CheckCircle, ChevronRight, RefreshCcw } from 'lucide-react';
+
+const flowchartData = {
+  start: {
+    question: "What type of communication do you need to send?",
+    options: [
+      { text: "Campus Event Announcement", next: "campusEvent" },
+      { text: "Campus Closure", next: "campusClosure" },
+      { text: "Academic Progress", next: "academicProgress" },
+      { text: "Newsletter", next: "newsletter" },
+      { text: "School-Wide Announcement", next: "schoolWide" },
+      { text: "Division-Specific Announcement", next: "divisionSpecific" }
+    ]
+  },
+  campusEvent: {
+    question: "Who is the target audience?",
+    options: [
+      { text: "AISPP Community", next: "communityEvent" },
+      { text: "AISPP Students", next: "studentEvent" },
+      { text: "AISPP Staff", next: "staffEvent" }
+    ]
+  },
+  communityEvent: {
+    result: "Use the AISPP Calendar and send an email announcement."
+  },
+  studentEvent: {
+    result: "Post in Toddle and use the AISPP Calendar."
+  },
+  staffEvent: {
+    result: "Use the divisional calendar and send an email announcement."
+  },
+  campusClosure: {
+    result: "Use WhatsApp 'All Staff' channel, post in Toddle, and update the AISPP Calendar."
+  },
+  academicProgress: {
+    result: "Use Toddle to communicate academic progress, assignments, and tasks."
+  },
+  newsletter: {
+    result: "Send via email and post in Toddle."
+  },
+  schoolWide: {
+    result: "Send via email, post in Toddle, and update the AISPP Calendar if applicable."
+  },
+  divisionSpecific: {
+    question: "Which division?",
+    options: [
+      { text: "Early Years", next: "earlyYears" },
+      { text: "Primary", next: "primary" },
+      { text: "Secondary", next: "secondary" }
+    ]
+  },
+  earlyYears: {
+    result: "Use the Early Years calendar, send via email, and post in Toddle."
+  },
+  primary: {
+    result: "Use the Primary calendar, send via email, and post in Toddle."
+  },
+  secondary: {
+    result: "Use the Secondary calendar, send via email, and post in Toddle."
+  }
+};
+
+const Flowchart = () => {
+  const [currentStep, setCurrentStep] = useState('start');
+  const [path, setPath] = useState([]);
+
+  const handleOption = (next) => {
+    setPath([...path, currentStep]);
+    setCurrentStep(next);
+  };
+
+  const resetFlowchart = () => {
+    setCurrentStep('start');
+    setPath([]);
+  };
+
+  const currentData = flowchartData[currentStep];
+
+  return (
+    <div className="max-w-2xl mx-auto p-4 bg-white rounded-lg shadow">
+      <h1 className="text-2xl font-bold mb-4">AISPP Communication Flowchart</h1>
+      <div className="mb-4">
+        {currentData.question ? (
+          <>
+            <p className="font-semibold mb-2">{currentData.question}</p>
+            <ul>
+              {currentData.options.map((option, index) => (
+                <li key={index} className="mb-2">
+                  <button
+                    onClick={() => handleOption(option.next)}
+                    className="flex items-center text-blue-600 hover:text-blue-800"
+                  >
+                    <ChevronRight className="mr-1" size={16} />
+                    {option.text}
+                  </button>
+                </li>
+              ))}
+            </ul>
+          </>
+        ) : (
+          <div className="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 mb-4">
+            <div className="flex items-center">
+              <CheckCircle className="mr-2" size={24} />
+              <p>{currentData.result}</p>
+            </div>
+          </div>
+        )}
+      </div>
+      {path.length > 0 && (
+        <div className="mb-4">
+          <h2 className="text-lg font-semibold mb-2">Your path:</h2>
+          <ul className="list-disc list-inside">
+            {path.map((step, index) => (
+              <li key={index}>{flowchartData[step].question}</li>
+            ))}
+          </ul>
+        </div>
+      )}
+      <button
+        onClick={resetFlowchart}
+        className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded flex items-center"
+      >
+        <RefreshCcw className="mr-2" size={16} />
+        Start Over
+      </button>
+      <div className="mt-4 bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 p-4">
+        <div className="flex items-center">
+          <AlertCircle className="mr-2" size={24} />
+          <p>Remember to always follow AISPP's communication guidelines and policies.</p>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default Flowchart;
